@@ -8,13 +8,32 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.constants import HORIZONTAL
 
+import numpy as np
 from keras.models import load_model
 from keras.preprocessing.image import save_img
 from keras_preprocessing.image.utils import img_to_array, load_img
 
 from predict import predict
 from image_viewer import ImageViewer
+from PIL import Image 
 #endregion
+
+def crop_img(img, new_size = (2560,2560)):
+    if img.mode == "RGB":
+        img = img.convert("L")
+    if img.size == (2560, 2974):
+        img_resize = img.crop((0, 0, 2560, 2560))
+    else:
+        largest = max(img.width, img.height)
+        new_h = np.round(np.multiply(new_size[0] / largest, img.size[0])).astype(int)
+        new_w = np.round(np.multiply(new_size[1] / largest, img.size[1])).astype(int)
+        img_resize = img.resize((new_h, new_w), Image.ANTIALIAS)
+    img_resize = img_to_array(img_resize)
+
+    if img_resize.max() > 255:
+        img_resize = (img_resize/256).astype('uint8')
+    img_resize = img_resize/255
+    return img_resize
 
 class MainApp(tk.Tk): 
     def __init__(self):
@@ -115,10 +134,16 @@ class MainApp(tk.Tk):
         model = load_model("./models/" + self.model_selected.get())
         for i, img_path in enumerate(self.img_paths):
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             img_array = img_to_array(load_img(img_path, color_mode="grayscale"))/255
             pred = predict(img_array, model, self.model_threshold_slider.get())
             save_img(self.destination_path_field.get() + "/" + str(i) + ".png", pred)
 =======
             pred = predict(model, self.model_threshold_slider.get(), img_path)
+            save_img(self.destination_path_field.get() + "/" + os.path.splitext(img_path.split("/")[-1])[0] + ".png", pred)
+>>>>>>> Stashed changes
+=======
+            img_array = crop_img(load_img(img_path, color_mode="grayscale"))
+            pred = predict(img_array, model, self.model_threshold_slider.get())
             save_img(self.destination_path_field.get() + "/" + os.path.splitext(img_path.split("/")[-1])[0] + ".png", pred)
 >>>>>>> Stashed changes
