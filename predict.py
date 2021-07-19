@@ -7,15 +7,13 @@ def predict(img_array, model, threshold):
     pred = model.predict(data)
     
     # setting optimal threshold based on intensity histogram
-<<<<<<< Updated upstream
+
     counts, bins = np.histogram(pred.flatten(), bins=np.exp(np.linspace(-15,0.5,30)))
     threshold = bins[np.where(counts == np.min(counts))[0]+1]
     pred = np.where(pred > threshold, 1, 0)
-=======
     # counts, bins = np.histogram(pred.flatten(), bins=np.exp(np.linspace(-15,0.5,30)))
     # threshold = bins[np.where(counts == np.min(counts))[0]+1]
     # pred = np.where(pred > threshold, 1, 0)
->>>>>>> Stashed changes
 
     return pred.reshape(img_array.shape[0], img_array.shape[1], 1)
 
